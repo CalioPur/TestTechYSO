@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -58,6 +59,18 @@ public class PlayerController : MonoBehaviour
         Vector3 forwardVelocity = Vector3.Dot(rb.linearVelocity, transform.forward) * transform.forward;
         Vector3 rightVelocity = Vector3.Dot(rb.linearVelocity, transform.right) * transform.right;
         rb.linearVelocity = forwardVelocity + rightVelocity * drift;
+    }
+
+    private float GetLateralVelocity()
+    {
+        return Vector3.Dot( transform.right,rb.linearVelocity);
+    }
+
+    public bool IsDrifting(out float lateralVelocity)
+    {
+        lateralVelocity = GetLateralVelocity();
+        
+        return Mathf.Abs(lateralVelocity) > 4f;
     }
     
     public void SetInput(Vector2 input)
