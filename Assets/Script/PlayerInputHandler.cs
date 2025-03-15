@@ -16,7 +16,9 @@ public class PlayerInputHandler : MonoBehaviour
         Vector3 AimDirection = new Vector3(input.x, 0, input.y);
         Vector3 TargetPosition = transform.position + AimDirection*10; //we multiply by 5 to get a point 5 units in front of the player
         //By doing this, the car will move toward a point which position is controlled by the joystick
-        //Because of the camera angle, i might need to tweak some value in the future
+        
+        //Because of the camera angle, I might need to tweak some value in the future
+        //^ instead of tweaking the value, I just changed the angle of the terrain, it was easier and now the camera is right behind the car
         
         CarInput.x = TurnTowardTarget(TargetPosition);
         CarInput.y = 1; //We always want the car to move forward

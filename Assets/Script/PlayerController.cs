@@ -27,22 +27,28 @@ public class PlayerController : MonoBehaviour
     private float rotationAngle;
     
     private bool isAlive = true;
+    private bool isPlayer;
+    
+    private void Awake()
+    {
+        isPlayer = CompareTag("Player");
+    }
     
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (isAlive)
+        if (isAlive && transform.position.y < 0.55f) //cant accelerate if the car is in the air
         {
             AccelerateCar();
             DampDrift();
             TurnCar();
         }
-        ApplyGravity();
+        else ApplyGravity();
     }
 
     private void ApplyGravity()
     {
-        if(transform.position.y > 0.5f) rb.AddForce(Vector3.down * 9.81f, ForceMode.Acceleration);
+        rb.AddForce(Vector3.down * 9.81f, ForceMode.Acceleration);
     }
 
 
@@ -86,6 +92,7 @@ public class PlayerController : MonoBehaviour
 
     public bool IsDrifting()
     {
+        if(!isAlive || transform.position.y> 0.55f) return false;
         return Mathf.Abs(GetLateralVelocity()) > 4f;
     }
     
@@ -103,7 +110,8 @@ public class PlayerController : MonoBehaviour
         while (time < realBoostDuration)
         {
             time += Time.deltaTime;
-            virtualCamera.Lens.FieldOfView = Mathf.Lerp(60, 70, Mathf.Clamp01(time / 0.5f));
+            
+            if(isPlayer) virtualCamera.Lens.FieldOfView = Mathf.Lerp(60, 70, Mathf.Clamp01(time / 0.5f));
             yield return null;
             
         }
@@ -117,11 +125,11 @@ public class PlayerController : MonoBehaviour
         while (time < 0.1f)
         {
             time += Time.deltaTime;
-            virtualCamera.Lens.FieldOfView = Mathf.Lerp(70, 60, time*10);
+            if(isPlayer) virtualCamera.Lens.FieldOfView = Mathf.Lerp(70, 60, time*10);
             yield return null;
         }
 
-        virtualCamera.Lens.FieldOfView = 60;
+        if(isPlayer)virtualCamera.Lens.FieldOfView = 60;
 
     }
 
@@ -140,5 +148,32 @@ public class PlayerController : MonoBehaviour
         rb.AddTorque(Vector3.right * Random.Range(5,10) , ForceMode.Impulse);
         rb.AddTorque(Vector3.up * Random.Range(5,10), ForceMode.Impulse);
         Destroy(gameObject, 3f);
+    }
+
+    public void DamagePlayer(Vector3 positionOfAttacker)
+    {
+        //player doesn't die, but gets pushed back
+        Repel(positionOfAttacker);
+        
+        //TODO : Decrease score (when we have a score system)
+        //TODO : visual feedback on UI (like red glow or something)
+        
+    }
+
+    public void WallHit()
+    {
+        //reset car velocity
+        rb.linearVelocity = Vector3.zero;
+        //the wall makes the car bounce back
+        rb.AddForce(-transform.forward * 5, ForceMode.Impulse);
+        rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
+    }
+
+    public void Repel(Vector3 otherPosition)
+    {
+        Vector3 direction = (transform.position - otherPosition).normalized;
+        rb.linearVelocity = Vector3.zero;
+        rb.AddForce(Vector3.up * Random.Range(3,7), ForceMode.Impulse);
+        rb.AddForce(direction * Random.Range(2,5), ForceMode.Impulse);
     }
 }
