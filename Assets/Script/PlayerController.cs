@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
+using Unity.Cinemachine;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 
 public class PlayerController : MonoBehaviour
@@ -7,6 +10,11 @@ public class PlayerController : MonoBehaviour
     
     [Header("References")]
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private Collider bodyCollider;
+    [SerializeField] private Collider damageCollider;
+    
+    [Header("Player Only")]
+    [SerializeField] private CinemachineCamera virtualCamera;
     
     [Header("Stats")]
     [SerializeField] private float maxSpeed = 10f;
@@ -18,15 +26,25 @@ public class PlayerController : MonoBehaviour
     private float turningInput;
     private float rotationAngle;
     
+    private bool isAlive = true;
+    
     // Update is called once per frame
     void FixedUpdate()
     {
-        AccelerateCar();
-        DampDrift();
-        TurnCar();
+        if (isAlive)
+        {
+            AccelerateCar();
+            DampDrift();
+            TurnCar();
+        }
+        ApplyGravity();
     }
 
-    
+    private void ApplyGravity()
+    {
+        if(transform.position.y > 0.5f) rb.AddForce(Vector3.down * 9.81f, ForceMode.Acceleration);
+    }
+
 
     private void AccelerateCar()
     {
@@ -66,16 +84,61 @@ public class PlayerController : MonoBehaviour
         return Vector3.Dot( transform.right,rb.linearVelocity);
     }
 
-    public bool IsDrifting(out float lateralVelocity)
+    public bool IsDrifting()
     {
-        lateralVelocity = GetLateralVelocity();
-        
-        return Mathf.Abs(lateralVelocity) > 4f;
+        return Mathf.Abs(GetLateralVelocity()) > 4f;
     }
     
     public void SetInput(Vector2 input)
     {
         accelerationInput = input.y;
         turningInput = input.x;
+    }
+
+    public IEnumerator BoostPostDrift(float boostDuration)
+    {
+        float realBoostDuration = Mathf.Min(boostDuration, 3f); // we don't want the boost to last more than 3 seconds
+        maxSpeed = 15f;
+        float time = 0;
+        while (time < realBoostDuration)
+        {
+            time += Time.deltaTime;
+            virtualCamera.Lens.FieldOfView = Mathf.Lerp(60, 70, Mathf.Clamp01(time / 0.5f));
+            yield return null;
+            
+        }
+        StartCoroutine(EndBoost());
+    }
+
+    public IEnumerator EndBoost()
+    {
+        maxSpeed = 10f;
+        float time = 0;
+        while (time < 0.1f)
+        {
+            time += Time.deltaTime;
+            virtualCamera.Lens.FieldOfView = Mathf.Lerp(70, 60, time*10);
+            yield return null;
+        }
+
+        virtualCamera.Lens.FieldOfView = 60;
+
+    }
+
+    public void DieAI(Vector3 positionOfAttacker)
+    {
+        if(!isAlive) return; //We don't want to call this function twice
+        isAlive = false;
+        //bodyCollider.enabled = false;
+        damageCollider.enabled = false;
+        
+        Vector3 direction = (transform.position - positionOfAttacker).normalized;
+        print(direction);
+        rb.constraints = RigidbodyConstraints.None;
+        rb.AddForce(Vector3.up * Random.Range(10,20), ForceMode.Impulse);
+        rb.AddForce(direction * Random.Range(15,30), ForceMode.Impulse);
+        rb.AddTorque(Vector3.right * Random.Range(5,10) , ForceMode.Impulse);
+        rb.AddTorque(Vector3.up * Random.Range(5,10), ForceMode.Impulse);
+        Destroy(gameObject, 3f);
     }
 }

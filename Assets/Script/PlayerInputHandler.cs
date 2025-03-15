@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerInputHandler : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private PlayerController playerController;
+    [SerializeField] private PlayerController carController;
     [SerializeField] private Joystick playerInput; //I use the joystick from the joystick pack because i had issues with the new input system
     //Using the Joystick instead of the FloatingJoystick so i could change the type of joystick in the future in settings, eventually
 
@@ -21,7 +21,7 @@ public class PlayerInputHandler : MonoBehaviour
         CarInput.x = TurnTowardTarget(TargetPosition);
         CarInput.y = 1; //We always want the car to move forward
         
-        playerController.SetInput(CarInput);
+        carController.SetInput(CarInput);
     }
     
     float TurnTowardTarget(Vector3 targetPosition)
