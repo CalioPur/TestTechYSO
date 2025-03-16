@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     private bool isAlive = true;
     [HideInInspector] public bool isPlayer;
     
+    
     private void Awake()
     {
         isPlayer = CompareTag("Player");
@@ -92,7 +93,7 @@ public class PlayerController : MonoBehaviour
 
     public bool IsDrifting()
     {
-        if(!isAlive || transform.position.y> 0.55f) return false;
+        if(RemainingEnemiesCount.Instance.gameEnded || !isAlive || transform.position.y> 0.55f) return false;
         return Mathf.Abs(GetLateralVelocity()) > 4f;
     }
     
@@ -108,12 +109,20 @@ public class PlayerController : MonoBehaviour
         float realBoostDuration = Mathf.Min(boostDuration, 3f); // we don't want the boost to last more than 3 seconds
         maxSpeed = 15f;
         float time = 0;
-        if (isPlayer) CameraShakeHandler.Instance.ShakeCamera(.5f, boostDuration);
+        if (isPlayer)
+        {
+            CameraShakeHandler.Instance.ShakeCamera(.5f, boostDuration);
+            PostProcessManager.Instance.SetChromaticAberration(0.5f, Mathf.Clamp01(boostDuration/3));
+        }
+        
         while (time < realBoostDuration)
         {
             time += Time.deltaTime;
-            
-            if(isPlayer) virtualCamera.Lens.FieldOfView = Mathf.Lerp(60, 70, Mathf.Clamp01(time / 0.5f));
+
+            if (isPlayer)
+            {
+                virtualCamera.Lens.FieldOfView = Mathf.Lerp(60, 70, Mathf.Clamp01(time / 0.5f));
+            }
             yield return null;
             
         }
@@ -124,13 +133,15 @@ public class PlayerController : MonoBehaviour
     {
         maxSpeed = 10f;
         float time = 0;
+        PostProcessManager.Instance.SetChromaticAberration(0, 0.1f);
         while (time < 0.1f)
         {
             time += Time.deltaTime;
             if(isPlayer) virtualCamera.Lens.FieldOfView = Mathf.Lerp(70, 60, time*10);
+            
             yield return null;
         }
-
+        
         if(isPlayer)virtualCamera.Lens.FieldOfView = 60;
 
     }

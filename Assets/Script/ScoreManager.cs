@@ -34,4 +34,17 @@ public class ScoreManager : MonoBehaviour
         score += amount;
         UpdateText();
     }
+
+    public void UpdateHighScore()
+    {
+        if (score > PlayerPrefs.GetInt("HighScore", 0))
+        {
+            PlayerPrefs.SetInt("HighScore", score);
+        }
+    }
+
+    public int GetScore()
+    {
+        return score;
+    }
 }
