@@ -108,6 +108,7 @@ public class PlayerController : MonoBehaviour
         float realBoostDuration = Mathf.Min(boostDuration, 3f); // we don't want the boost to last more than 3 seconds
         maxSpeed = 15f;
         float time = 0;
+        if (isPlayer) CameraShakeHandler.Instance.ShakeCamera(.5f, boostDuration);
         while (time < realBoostDuration)
         {
             time += Time.deltaTime;
@@ -157,7 +158,7 @@ public class PlayerController : MonoBehaviour
         //player doesn't die, but gets pushed back
         Repel(positionOfAttacker);
         ScoreManager.Instance.IncreaseScore(-200); //if the player hits another player, he loses 200 points
-        
+        CameraShakeHandler.Instance.ShakeCamera(1, 0.3f);
         //TODO : visual feedback on UI (like red glow or something)
         
     }
@@ -169,6 +170,7 @@ public class PlayerController : MonoBehaviour
         //the wall makes the car bounce back
         rb.AddForce(-transform.forward * 5, ForceMode.Impulse);
         rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
+        if(isPlayer) CameraShakeHandler.Instance.ShakeCamera(1, 0.3f);
     }
 
     public void Repel(Vector3 otherPosition)
@@ -177,5 +179,6 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         rb.AddForce(Vector3.up * Random.Range(3,7), ForceMode.Impulse);
         rb.AddForce(direction * Random.Range(2,5), ForceMode.Impulse);
+        if(isPlayer) CameraShakeHandler.Instance.ShakeCamera(1f, 0.3f);
     }
 }

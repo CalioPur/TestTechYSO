@@ -24,7 +24,11 @@ public class CollisionHandler : MonoBehaviour
                 break;
             case "AI":
                 other.GetComponent<PlayerController>().DieAI(transform.position);
-                if(transform.CompareTag("Player")) ScoreManager.Instance.IncreaseScore(1000); //if the player kills an AI, he gets 1000 points
+                if (transform.CompareTag("Player"))
+                {
+                    ScoreManager.Instance.IncreaseScore(1000); //if the player kills an AI, he gets 1000 points
+                    CameraShakeHandler.Instance.ShakeCamera(2, 0.3f);
+                }
                 break;
             case "Player":
                 other.GetComponent<PlayerController>().DamagePlayer(transform.position);
