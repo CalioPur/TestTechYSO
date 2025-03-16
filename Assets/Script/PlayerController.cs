@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     
     [Header("Player Only")]
     [SerializeField] private CinemachineCamera virtualCamera;
+    [SerializeField] private ParticleSystem speedLines;
     
     [Header("Stats")]
     [SerializeField] private float maxSpeed = 10f;
@@ -111,8 +112,9 @@ public class PlayerController : MonoBehaviour
         float time = 0;
         if (isPlayer)
         {
-            CameraShakeHandler.Instance.ShakeCamera(.5f, boostDuration);
+            CameraShakeHandler.Instance.ShakeCamera(1f, boostDuration);
             PostProcessManager.Instance.SetChromaticAberration(0.5f, Mathf.Clamp01(boostDuration/3));
+            speedLines.Play();
         }
         
         while (time < realBoostDuration)
@@ -133,16 +135,20 @@ public class PlayerController : MonoBehaviour
     {
         maxSpeed = 10f;
         float time = 0;
-        PostProcessManager.Instance.SetChromaticAberration(0, 0.1f);
-        while (time < 0.1f)
+        PostProcessManager.Instance.SetChromaticAberration(0, 0.3f);
+        while (time < 0.3f)
         {
             time += Time.deltaTime;
-            if(isPlayer) virtualCamera.Lens.FieldOfView = Mathf.Lerp(70, 60, time*10);
+            if(isPlayer) virtualCamera.Lens.FieldOfView = Mathf.Lerp(70, 60, time/0.3f);
             
             yield return null;
         }
-        
-        if(isPlayer)virtualCamera.Lens.FieldOfView = 60;
+
+        if (isPlayer)
+        {
+            virtualCamera.Lens.FieldOfView = 60;
+            speedLines.Stop();
+        }
 
     }
 
@@ -169,7 +175,7 @@ public class PlayerController : MonoBehaviour
         //player doesn't die, but gets pushed back
         Repel(positionOfAttacker);
         ScoreManager.Instance.IncreaseScore(-200); //if the player hits another player, he loses 200 points
-        CameraShakeHandler.Instance.ShakeCamera(1, 0.3f);
+        CameraShakeHandler.Instance.ShakeCamera(2, 0.3f);
         //TODO : visual feedback on UI (like red glow or something)
         
     }
@@ -181,7 +187,7 @@ public class PlayerController : MonoBehaviour
         //the wall makes the car bounce back
         rb.AddForce(-transform.forward * 5, ForceMode.Impulse);
         rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
-        if(isPlayer) CameraShakeHandler.Instance.ShakeCamera(1, 0.3f);
+        if(isPlayer) CameraShakeHandler.Instance.ShakeCamera(1.5f, 0.3f);
     }
 
     public void Repel(Vector3 otherPosition)
@@ -190,6 +196,6 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         rb.AddForce(Vector3.up * Random.Range(3,7), ForceMode.Impulse);
         rb.AddForce(direction * Random.Range(2,5), ForceMode.Impulse);
-        if(isPlayer) CameraShakeHandler.Instance.ShakeCamera(1f, 0.3f);
+        if(isPlayer) CameraShakeHandler.Instance.ShakeCamera(1.5f, 0.3f);
     }
 }

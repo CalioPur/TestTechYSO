@@ -348,9 +348,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 7710488365839316527}
-  bodyCollider: {fileID: 0}
-  damageCollider: {fileID: 0}
+  bodyCollider: {fileID: 4462269255939979357}
+  damageCollider: {fileID: 7409295648820370137}
   virtualCamera: {fileID: 0}
+  speedLines: {fileID: 0}
   maxSpeed: 10
   acceleration: 30
   turningSpeed: 5
