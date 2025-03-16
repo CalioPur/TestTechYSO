@@ -144,7 +144,7 @@ public class PlayerController : MonoBehaviour
         damageCollider.enabled = false;
         
         Vector3 direction = (transform.position - positionOfAttacker).normalized;
-        print(direction);
+        
         rb.constraints = RigidbodyConstraints.None;
         rb.AddForce(Vector3.up * Random.Range(10,20), ForceMode.Impulse);
         rb.AddForce(direction * Random.Range(15,30), ForceMode.Impulse);
