@@ -13,7 +13,8 @@ public class AIInputHandler : MonoBehaviour
     Transform lastTarget;
     private float timeOffset;
     private float timeToChangeTarget;
-    
+
+    private float accelerationInput = 0f;
     
 
     private void Awake()
@@ -33,6 +34,11 @@ public class AIInputHandler : MonoBehaviour
                                                    //but we add a random offset to avoid all the AI to change target at the same time
     }
     
+    public void StartCarsInput()
+    {
+        accelerationInput = 1f;
+    }
+    
     void FixedUpdate()
     {
         Vector2 CarInput = Vector2.zero;
@@ -41,7 +47,7 @@ public class AIInputHandler : MonoBehaviour
                                                  //following it to avoid the AI to change target every frame
         
         CarInput.x = TurnTowardTarget(target.position);
-        CarInput.y = 1; //We always want the car to move forward
+        CarInput.y = accelerationInput; //We always want the car to move forward
         
         carController.SetInput(CarInput);
         

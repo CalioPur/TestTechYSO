@@ -7,6 +7,8 @@ public class PlayerInputHandler : MonoBehaviour
     [SerializeField] private Joystick playerInput; //I use the joystick from the joystick pack because i had issues with the new input system
                                                    //Using the Joystick instead of the FloatingJoystick so i could change the type of joystick
                                                    //in the future in settings, eventually
+                                                   
+    private float accelerationInput = 0f;
 
     // Update is called once per frame
     void FixedUpdate()
@@ -22,9 +24,14 @@ public class PlayerInputHandler : MonoBehaviour
         //^ instead of tweaking the value, I just changed the angle of the terrain, it was easier and now the camera is right behind the car
         
         CarInput.x = TurnTowardTarget(TargetPosition);
-        CarInput.y = 1; //We always want the car to move forward
+        CarInput.y = accelerationInput; //We always want the car to move forward
         
         carController.SetInput(CarInput);
+    }
+    
+    public void startPlayerInput()
+    {
+        accelerationInput = 1f;
     }
     
     float TurnTowardTarget(Vector3 targetPosition)
