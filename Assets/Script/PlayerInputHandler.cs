@@ -5,7 +5,8 @@ public class PlayerInputHandler : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerController carController;
     [SerializeField] private Joystick playerInput; //I use the joystick from the joystick pack because i had issues with the new input system
-    //Using the Joystick instead of the FloatingJoystick so i could change the type of joystick in the future in settings, eventually
+                                                   //Using the Joystick instead of the FloatingJoystick so i could change the type of joystick
+                                                   //in the future in settings, eventually
 
     // Update is called once per frame
     void FixedUpdate()
@@ -15,7 +16,7 @@ public class PlayerInputHandler : MonoBehaviour
         Vector2 input = playerInput.Direction;
         Vector3 AimDirection = new Vector3(input.x, 0, input.y);
         Vector3 TargetPosition = transform.position + AimDirection*10; //we multiply by 5 to get a point 5 units in front of the player
-        //By doing this, the car will move toward a point which position is controlled by the joystick
+                                                                       //By doing this, the car will move toward a point which position is controlled by the joystick
         
         //Because of the camera angle, I might need to tweak some value in the future
         //^ instead of tweaking the value, I just changed the angle of the terrain, it was easier and now the camera is right behind the car

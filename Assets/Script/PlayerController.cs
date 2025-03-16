@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     private float rotationAngle;
     
     private bool isAlive = true;
-    private bool isPlayer;
+    [HideInInspector] public bool isPlayer;
     
     private void Awake()
     {
@@ -104,6 +104,7 @@ public class PlayerController : MonoBehaviour
 
     public IEnumerator BoostPostDrift(float boostDuration)
     {
+        
         float realBoostDuration = Mathf.Min(boostDuration, 3f); // we don't want the boost to last more than 3 seconds
         maxSpeed = 15f;
         float time = 0;
@@ -137,6 +138,7 @@ public class PlayerController : MonoBehaviour
     {
         if(!isAlive) return; //We don't want to call this function twice
         isAlive = false;
+        RemainingEnemiesCount.Instance.DecreaseRemainingEnemies(); //Actualize the remaining enemies count UI
         //bodyCollider.enabled = false;
         damageCollider.enabled = false;
         
@@ -154,8 +156,8 @@ public class PlayerController : MonoBehaviour
     {
         //player doesn't die, but gets pushed back
         Repel(positionOfAttacker);
+        ScoreManager.Instance.IncreaseScore(-200); //if the player hits another player, he loses 200 points
         
-        //TODO : Decrease score (when we have a score system)
         //TODO : visual feedback on UI (like red glow or something)
         
     }

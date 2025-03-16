@@ -22,6 +22,7 @@ public class TrailRendererHandler : MonoBehaviour
     {
         if (carController.IsDrifting())
         {
+            if(carController.isPlayer) ScoreManager.Instance.IncreaseScore(1); //Increase the score when the player is drifting
             foreach (TrailRenderer trail in trailRenderers)
             {
                 trail.emitting = true;
@@ -30,6 +31,7 @@ public class TrailRendererHandler : MonoBehaviour
         }
         else
         {
+            //if(carController.isPlayer) ScoreManager.Instance.IncreaseScore((int)(timeSpendDrifting*100)); //Increase the score when the player boost after a drift
             foreach (TrailRenderer trail in trailRenderers)
             {
                 trail.emitting = false;
