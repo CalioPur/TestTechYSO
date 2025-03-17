@@ -8,6 +8,8 @@ public class CameraShakeHandler : MonoBehaviour
     [SerializeField] private Cinemachine.CinemachineBasicMultiChannelPerlin noise;
     public static CameraShakeHandler Instance;
     
+    bool screenShakeOn;
+    
     private void Awake()
     {
         if (Instance == null)
@@ -18,10 +20,13 @@ public class CameraShakeHandler : MonoBehaviour
         {
             Destroy(this);
         }
+        
+        screenShakeOn = PlayerPrefs.GetInt("ScreenShake", 1) == 1;
     }
     
     public void ShakeCamera(float intensity, float time)
     {
+        if (!screenShakeOn) return;
         //create a noise profile
         noise.AmplitudeGain = intensity;
         noise.FrequencyGain = 1f;

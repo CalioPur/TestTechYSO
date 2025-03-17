@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         isPlayer = CompareTag("Player");
+        
     }
     
     // Update is called once per frame

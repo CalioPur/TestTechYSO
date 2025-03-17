@@ -8,6 +8,8 @@ public class PostProcessManager : MonoBehaviour
     public static PostProcessManager Instance { get; private set; }
     [SerializeField] private Volume volume;
     private ChromaticAberration chromaticAberration;
+    
+    private bool chromaticAberrationOn;
      
     private void Awake()
     {
@@ -19,10 +21,12 @@ public class PostProcessManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        chromaticAberrationOn = PlayerPrefs.GetInt("ChromaticAberration", 1) == 1;
     }
      
     public void SetChromaticAberration(float value, float time)
     {
+        if (!chromaticAberrationOn) return;
         StartCoroutine(ChangeChromaticAberration(value, time));
     }
      
